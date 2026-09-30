@@ -26,13 +26,16 @@ async function createFlight(data) {
 }
 
 async function getAllFlights(query){
-   let customFilter = {};
-   if(query.trips){
-    const [departureAirportId, arrivalAirportId] = query.trips.split('-');
-    customFilter.departureAirportId = departureAirportId;
-    customFilter.arrivalAirportId = arrivalAirportId;
+   const customFilter = {};
+
+   if (query.departureAirportId) {
+       customFilter.departureAirportId = query.departureAirportId;
    }
-try {
+   if (query.arrivalAirportId) {
+       customFilter.arrivalAirportId = query.arrivalAirportId;
+   }
+
+   try {
     const flights = await flightRepository.getAllFlights(customFilter);
     return flights;
 }

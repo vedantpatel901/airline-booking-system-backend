@@ -12,6 +12,23 @@ const  validateFlight = (req,res,next) => {
     }
     next()
 }
+
+const validateFlightSearch = (req, res, next) => {
+    const airportIds = [req.query.departureAirportId, req.query.arrivalAirportId];
+    const hasInvalidAirportId = airportIds.some((id) => id !== undefined && !/^[1-9]\d*$/.test(id));
+
+    if (hasInvalidAirportId) {
+        const response = AppErrors(
+            'Airport ids must be positive integers',
+            new AppError(['Invalid flight search parameters'], StatusCodes.BAD_REQUEST)
+        );
+        return res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+
+    next();
+}
+
 module.exports = {
-    validateFlight
+    validateFlight,
+    validateFlightSearch,
 }
