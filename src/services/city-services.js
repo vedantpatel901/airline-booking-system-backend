@@ -7,9 +7,18 @@ const cityRepository = new CityRepository();
 
 async function createCity(data) {
     try {
+        if (!data.name || !data.name.trim()) {
+            throw new AppError(
+                'City name is required',
+                StatusCodes.BAD_REQUEST
+            );
+        }
         const city = await cityRepository.create(data);
         return city;
     } catch(error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
             if( error.name === 'SequelizeUniqueConstraintError') {
                 let explanation = [];
                 error.errors.forEach((err) => {
