@@ -11,7 +11,9 @@ module.exports = {
       },
       modelNumber: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true,
+        name : 'unique_airplane_model_number'
       },
       capacity: {
         type: Sequelize.INTEGER,

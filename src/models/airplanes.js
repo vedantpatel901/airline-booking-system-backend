@@ -11,19 +11,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.Flights ,{
-        foreignKey : 'airplaneId',
-        onDelete : 'CASCADE',
+      this.hasMany(models.Flights, {
+        foreignKey: 'airplaneId',
+        onDelete: 'CASCADE',
       });
-      this.hasMany(models.seats ,{
-        foreignKey : 'airplaneId',
-        onDelete : 'CASCADE',
+      this.hasMany(models.seats, {
+        foreignKey: 'airplaneId',
+        onDelete: 'CASCADE',
       });
     }
   }
   Airplanes.init({
-    modelNumber: { type: DataTypes.STRING, allowNull: false },
-    capacity: { type: DataTypes.INTEGER, allowNull: false , validate: { min: 1, max: 200 }, defaultValue: 0 }
+    modelNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: true
+      }
+    },
+    capacity: { type: DataTypes.INTEGER, allowNull: false, validate: { min: 1, max: 300 }, defaultValue: 0 }
   }, {
     sequelize,
     modelName: 'Airplanes',
