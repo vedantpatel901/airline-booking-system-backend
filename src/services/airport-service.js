@@ -6,19 +6,35 @@ const airportRepository = new AirportRepository();
 
 async function createAirport(data) {
     try {
-        console.log("data in service", data);
         const airport = await airportRepository.create(data);
         return airport;
+
     } catch (error) {
-        console.log("error in service", error);
+
         if (error.name === 'SequelizeValidationError') {
-            let explanation = [];
-            error.errors.forEach((err) => {
-                explanation.push(err.message);
-            });
+            const explanation = error.errors.map(err => err.message);
+
             throw new AppError(explanation, StatusCodes.BAD_REQUEST);
         }
-        throw new AppError('Something went wrong while creating an airport', StatusCodes.INTERNAL_SERVER_ERROR);
+
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            throw new AppError(
+                'Airport name or code already exists',
+                StatusCodes.CONFLICT
+            );
+        }
+
+        if (error.name === 'SequelizeForeignKeyConstraintError') {
+            throw new AppError(
+                'Invalid cityId. The provided city does not exist.',
+                StatusCodes.BAD_REQUEST
+            );
+        }
+
+        throw new AppError(
+            'Something went wrong while creating an airport',
+            StatusCodes.INTERNAL_SERVER_ERROR
+        );
     }
 }
 
@@ -50,12 +66,22 @@ async function getAirport(id) {
 async function deleteAirport(id) {
     try {
         const response = await airportRepository.destroy(id);
-        return response;
-    } catch (error) {
-        if (error.statusCodes === StatusCodes.NOT_FOUND) {
-            throw new AppError('airport not found', StatusCodes.NOT_FOUND);
+
+        if (response === 0) {
+            throw new AppError('Airport not found', StatusCodes.NOT_FOUND);
         }
-        throw new AppError('cannot delete airport', StatusCodes.INTERNAL_SERVER_ERROR);
+
+        return response;
+
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError(
+            'Cannot delete airport',
+            StatusCodes.INTERNAL_SERVER_ERROR
+        );
     }
 }
 
