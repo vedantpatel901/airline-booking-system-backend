@@ -106,7 +106,42 @@ async function getAllFlights(query) {
     }
 }
 
+async function getFlight(id) {
+    try {
+        const flight = await flightRepository.getdatabypk(id);
+        if (!flight) {
+            throw new AppError('Flight with this id is not found', StatusCodes.NOT_FOUND);
+        }
+        return flight;
+    } catch (error) {
+        console.log("error in service", error);
+        if (error instanceof AppError) {
+            throw error;
+        }
+        throw new AppError('cannot fetch Flight', StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+async function updateFlightSeats(data) {
+    try {
+        const response = await flightRepository.updateFlightSeats(data.flightId, data.seats, data.dec);
+        if (!response) {
+            throw new AppError('Flight with this id is not found', StatusCodes.NOT_FOUND);
+        }
+        return response;
+    } catch (error) {
+        console.log("error in service", error);
+        if (error instanceof AppError) {
+            throw error;
+        }
+        throw new AppError('seats with this flight number is not updated', StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 module.exports = {
     createFlight,
-    getAllFlights
+    getAllFlights,
+    getFlight,
+    updateFlightSeats
 };

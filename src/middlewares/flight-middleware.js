@@ -147,7 +147,30 @@ if (minPrice !== undefined && maxPrice !== undefined && Number(minPrice) > Numbe
     next();
 }
 
+const validateFlightSeatsUpdate = (req, res, next) => {
+    const {  seats} = req.body;
+
+    if ( !seats) {
+        const response = AppErrors(
+            'Flight ID and seats are required',
+            new AppError(['Missing required fields'], StatusCodes.BAD_REQUEST)
+        );
+        return res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+
+    if (!Number.isInteger(Number(seats)) || Number(seats) <= 0) {
+        const response = AppErrors(
+            'Seats must be a positive integer',
+            new AppError(['Invalid seats value'], StatusCodes.BAD_REQUEST)
+        );
+        return res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+
+    next();
+}
+
 module.exports = {
     validateFlight,
     validateFlightSearch,
+    validateFlightSeatsUpdate
 }

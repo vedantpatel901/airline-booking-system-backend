@@ -55,7 +55,55 @@ async function getAllFlights(req, res) {
 }
 }
 
+async function getFlight(req, res) {
+    try {
+        const Flight = await FlightService.getFlight(req.params.id);
+        const response = AppSuccess('Flight fetched successfully', Flight);
+        return res
+            .status(StatusCodes.OK)
+            .json(response);
+    } catch (error) {
+        console.log("error in controller", error);
+        const statusCode = error?.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+        const response = AppErrors(error.message, {
+            explanation: error.explanation,
+            statusCode,
+        }); 
+        return res
+            .status(statusCode)
+            .json(response);
+    }
+    next();
+}
+
+async function updateFlightSeats(req, res,next) {
+    try {
+        const flight = await FlightService.updateFlightSeats({
+            flightId: req.params.id,
+            seats: req.body.seats,
+            dec: req.body.dec ?? true
+        });
+        const response = AppSuccess('Flight seats updated successfully', flight);
+        return res
+            .status(StatusCodes.OK)
+            .json(response);
+    } catch (error) {
+        console.log("error in controller", error);
+        const statusCode = error?.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+        const response = AppErrors(error.message, {
+            explanation: error.explanation,
+            statusCode,
+        }); 
+        return res
+            .status(statusCode)
+            .json(response);
+    }
+    next();
+}
+
 module.exports = {
     createFlight,
-    getAllFlights
+    getAllFlights,
+    getFlight,
+    updateFlightSeats
 }
