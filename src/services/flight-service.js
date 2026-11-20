@@ -24,7 +24,7 @@ async function createFlight(data) {
         }
 
         // Check overlapping flight schedule
-        const existingFlight = await flightRepository. (
+        const existingFlight = await flightRepository.findConflictingFlight(
             data.airplaneId,
             data.departureTime,
             data.arrivalTime
